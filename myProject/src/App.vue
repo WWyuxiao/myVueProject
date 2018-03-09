@@ -28,12 +28,14 @@
       }
     },
     created () {
-      this.$http.get('/api/seller').then((response) => {
+      this.$http.get('/api/seller').then(response => {
         response = response.body
         if (response.errno === ERR_OK) {
           this.seller = response.data
           console.log(this.seller)
         }
+      }, response => {
+        // error callback
       })
     },
     components: {
@@ -59,6 +61,6 @@
        display: block
        font-size: 14px
        color: rgb(77, 85, 93)
-       &.router-link-active
+       &.active
          color: rgb(240, 20, 20)
 </style>

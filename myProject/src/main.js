@@ -29,7 +29,8 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  routes
+  linkActiveClass: 'active',
+  routes: routes
 })
 
 /* eslint-disable no-new */

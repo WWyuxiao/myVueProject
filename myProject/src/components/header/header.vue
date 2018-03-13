@@ -277,8 +277,6 @@
                 &.special
                   bg-image('special_1')
               .text
-
-
                 font-size: 12px
                 font-weight: 200
                 line-height: 16px

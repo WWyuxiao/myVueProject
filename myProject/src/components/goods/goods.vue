@@ -1,17 +1,17 @@
 <template>
   <div class="goods">
-    <div class="menu-wrapper">
+    <div class="menu-wrapper" ref="menuWrapper">
       <ul>
-      	<li v-for="item in goods" class="menu-item">
+      	<li v-for="(item, $index) in goods" class="menu-item" :class="{'current': currentIndex === $index}" @click="selectMenu($index, $event)">
       		<span class="text border-1px">
       			<span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>{{item.name}}
       		</span>
       	</li>
       </ul>
     </div>
-    <div class="foods-wrapper">
+    <div class="foods-wrapper" ref="foodsWrapper">
     	<ul>
-    		<li v-for="item in goods" class="food-list">
+    		<li v-for="item in goods" class="food-list food-list-hook">
     			<h1 class="title">{{item.name}}</h1>
     			<ul>
     				<li v-for="food in item.foods" class="food-item border-1px">
@@ -22,8 +22,7 @@
     						<h2 class="name">{{food.name}}</h2>
     						<p class="desc">{{food.description}}</p>
     						<div class="extr">
-    							<span class="count">月售{{food.sellCount}}</span>
-    							<span>好评率{{food.rating}}%</span>
+    							<span class="count">月售{{food.sellCount}}</span><span>好评率{{food.rating}}%</span>
     						</div>
     						<div class="price">
     							<span class="now">￥{{food.price}}</span>
@@ -35,10 +34,14 @@
     		</li>
     	</ul>
     </div>
+    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import BScroll from 'better-scroll'
+  import shopcart from '../shopcart/shopcart'
+
   const ERR_OK = 0
 
   export default{
@@ -49,7 +52,21 @@
     },
     data () {
       return {
-        goods: []
+        goods: [],
+        listHeight: [], // 右侧区间li高度数组
+        scrollY: 0 // 与右侧height映射对比
+      }
+    },
+    computed: {
+      currentIndex () { // 表示左侧当前索引在哪
+        for (let i = 0; i < this.listHeight.length; i++) {
+          let height1 = this.listHeight[i]
+          let height2 = this.listHeight[i + 1]
+          if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+            return i
+          }
+        }
+        return 0
       }
     },
     created () {
@@ -58,8 +75,44 @@
         response = response.body
             if (response.errno === ERR_OK) {
                 this.goods = response.data
+                this.$nextTick(() => { // 在这个函数中调用以防内容还未加载完就执行，获取不到元素的高度导致无法滑动
+                  this._initScroll()
+                  this._calculateHeight()
+                })
             }
         }, response => {})
+    },
+    methods: {
+      selectMenu (index, event) {
+        if (!event._constructed) { // 判断是否为自定义事件
+          return
+        }
+        let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        let el = foodList[index]
+        this.foodsScroll.scrollToElement(el, 300)
+      },
+      _initScroll () {
+        this.menuScroll = new BScroll(this.$refs.menuWrapper, {click: true})
+        this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+          probeType: 3  // 监测实时滚动的位置
+        })
+        this.foodsScroll.on('scroll', (pos) => { // 监听滚动事件，返回实时位置
+          this.scrollY = Math.abs(Math.round(pos.y))
+        })
+      },
+      _calculateHeight () {
+        let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        let height = 0
+        this.listHeight.push(height)
+        for (let i = 0; i < foodList.length; i++) {
+          let item = foodList[i]
+          height += item.clientHeight // 每个区间累加的高度
+          this.listHeight.push(height)
+        }
+      }
+    },
+    components: {
+      shopcart
     }
   }
 </script>
@@ -85,6 +138,14 @@
         width: 56px
         line-height: 14px
         padding: 0 12px
+        &.current
+          position: relative
+          z-index: 10
+          margin-top: -1px
+          background: #ffffff
+          font-weight: 700
+          .text
+            border-no()
         .icon
           vertical-align: top
           display: inline-block
@@ -145,6 +206,7 @@
               margin-right: 12px
           .desc
             margin-bottom: 8px
+            line-height: 12px
           .price
             font-weight: 700
             line-height: 24px

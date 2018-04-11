@@ -12,7 +12,7 @@
 
 <script type="text/ecmascript-6">
   import Vue from 'vue'
-
+  
   export default {
     props: {
       food: {
@@ -20,14 +20,23 @@
       }
     },
     methods: {
-      addCart () {
+      addCart (event) { // 增加数量
+        if (!event._constructed) {
+          return
+        }
         if (!this.food.count) {
           Vue.set(this.food, 'count', 1)
         } else {
             this.food.count ++
         }
+        // console.log(this.$root.eventHub)
+        // this.$root.eventHub.$emit('cart-add', event.target) // 传输点击的目标元素
+        this.$emit('cart-add', event.target) // 传输点击的目标元素
       },
-      decreaseCart () {
+      decreaseCart (event) { // 减少数量
+        if (!event._constructed) {
+          return
+        }
         if (this.food.count) {
           this.food.count--
         }
@@ -42,19 +51,21 @@
     .cart-decrease
       display: inline-block
       padding: 6px
+      transition: all 0.4s linear
       .inner
         display: inline-block
         line-height: 24px      
         font-size: 24px
         color: rgb(0, 160, 220)
-        transition: all .4s linear
-      &.move-enter-active, .move-leave-active
-        transition: all .4s linear
+        transition: all 0.4s linear
+      &.move-enter-active
+        opacity: 1
+        transform: translate3d(0, 0, 0)
         .inner
           transform: rotate(0deg)
-      &.move-enter, .move-leave-active
+      &.move-enter, &.move-leave-to
+        transform: translate3d(24px, 0, 0)
         opacity: 0
-        transform: translate3D(24px, 0, 0)
         .inner
           transform: rotate(180deg)
     .cart-count

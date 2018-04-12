@@ -2,7 +2,7 @@
   <div class="goods">
     <div class="menu-wrapper" ref="menuWrapper">
       <ul>
-      	<li v-for="(item, $index) in goods" class="menu-item" :class="{'current': currentIndex === $index}" @click="selectMenu($index, $event)">
+      	<li v-for="(item, index) in goods" :key="index" class="menu-item" :class="{'current': currentIndex === index}" @click="selectMenu(index, $event)">
       		<span class="text border-1px">
       			<span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>{{item.name}}
       		</span>
@@ -11,10 +11,10 @@
     </div>
     <div class="foods-wrapper" ref="foodsWrapper">
     	<ul>
-    		<li v-for="item in goods" class="food-list food-list-hook">
+    		<li v-for="(item, index) in goods" :key="index" class="food-list food-list-hook">
     			<h1 class="title">{{item.name}}</h1>
     			<ul>
-    				<li v-for="food in item.foods" class="food-item border-1px">
+    				<li @click="selectFood(food, $event)" v-for="(food, index) in item.foods" :key="index" class="food-item border-1px">
     					<div class="icon">
     						<img width="57" height="57" :src="food.icon">
     					</div>
@@ -29,7 +29,7 @@
     							<span class="old" v-show="food.oldPrice">{{food.oldPrice}}</span>
     						</div>
                 <div class="cartcontrol-wrapper">
-                  <cartcontrol :food="food" v-on:cart-add="cartAdd"></cartcontrol>
+                  <cartcontrol :food="food"></cartcontrol>
                 </div>
     					</div>
     				</li>
@@ -37,7 +37,8 @@
     		</li>
     	</ul>
     </div>
-    <shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <food :food="selectedFood" ref="food"></food>
   </div>
 </template>
 
@@ -45,6 +46,7 @@
   import BScroll from 'better-scroll'
   import shopcart from '../shopcart/shopcart'
   import cartcontrol from '../cartcontrol/cartcontrol'
+  import food from '../food/food'
 
   const ERR_OK = 0
 
@@ -58,7 +60,8 @@
       return {
         goods: [],
         listHeight: [], // 右侧区间li高度数组
-        scrollY: 0 // 与右侧height映射对比
+        scrollY: 0, // 与右侧height映射对比
+        selectedFood: {}
       }
     },
     computed: {
@@ -99,18 +102,12 @@
     },
     methods: {
       selectMenu (index, event) {
-        if (!event._constructed) { // 判断是否为自定义事件
+        if (!event._constructed) { // _constructed是better-scroll事件对象属性，原生事件没有在这个属性,所以不执行下面的函数,也就是说阻止pc端的点击事件
           return
         }
         let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
         let el = foodList[index]
         this.foodsScroll.scrollToElement(el, 300)
-      },
-      cartAdd (el) {
-        // 体验优化，异步执行下落动画
-        this.$nextTick(() => {
-          this.$refs.shopcart.drop(el)
-        })
       },
       _initScroll () {
         this.menuScroll = new BScroll(this.$refs.menuWrapper, {click: true})
@@ -131,11 +128,20 @@
           height += item.clientHeight // 每个区间累加的高度
           this.listHeight.push(height)
         }
+      },
+      selectFood (food, event) {
+        if (!event._constructed) {
+          return
+        }
+        this.selectedFood = food
+        console.log(this.selectedFood)
+        this.$refs.food.show()
       }
     },
     components: {
       shopcart,
-      cartcontrol
+      cartcontrol,
+      food
     }
   }
 </script>

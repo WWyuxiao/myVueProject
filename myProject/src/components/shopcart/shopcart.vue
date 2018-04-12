@@ -11,7 +11,7 @@
           <div class="price" :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
           <div class="desc">另需配送费￥{{deliveryPrice}}元</div>
       </div>
-      <div class="content-right">
+      <div class="content-right" @click.stop.prevent="pay">
           <div class="pay" :class="payClass">
               {{payDesc}}
           </div>
@@ -33,9 +33,9 @@
       <div class="shopcart-list" v-show="listShow">
         <div class="list-header">
           <h1 class="title">购物车</h1>
-          <span class="empty">清空</span>
+          <span class="empty" @click="empty">清空</span>
         </div>
-        <div class="list-content">
+        <div class="list-content" ref="listContent">
           <ul>
             <li class="food" v-for="(food, index) in selectFoods" :key="index">
               <span class="name">{{food.name}}</span>
@@ -50,10 +50,14 @@
         </div>
       </div>
     </transition>
+    <transition name="fade">
+      <div class="list-mask" v-show="listShow" @click.stop.prevent="hideList"></div>
+    </transition>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import BScroll from 'better-scroll'
   import cartcontrol from '../cartcontrol/cartcontrol'
 
   export default {
@@ -96,10 +100,10 @@
         fold: true // 购物车默认折叠
       }
     },
-    // created () {
+    created () {
       // 获取按钮组件的点击元素，用在drop方法里
-      // this.$root.eventHub.$on('cart-add', this.drop)
-    // },
+      this.$root.eventHub.$on('cart-add', this.drop)
+    },
     computed: {
       totalPrice () { // 计算总价格
         let total = 0
@@ -138,11 +142,23 @@
           return false
         }
         let show = !this.fold
+        if (show) {
+          this.$nextTick(() => {
+            if (!this.scroll) {
+              this.scroll = new BScroll(this.$refs.listContent, {
+                click: true
+              })
+            } else {
+              this.scroll.refresh()
+            }
+          })
+        }
         return show
       }
     },
     methods: {
       drop (el) { // 获取到点击的那个添加按钮
+        // console.log(el)
         for (let i = 0; i < this.balls.length; i++) {
           let ball = this.balls[i]
           if (!ball.show) {
@@ -194,6 +210,20 @@
           return
         }
         this.fold = !this.fold
+      },
+      empty () {
+        this.selectFoods.forEach((food) => {
+          food.count = 0
+        })
+      },
+      hideList () {
+        this.fold = true
+      },
+      pay () {
+        if (this.totalPrice < this.minPrice) {
+          return
+        }
+        window.alert(`支付${this.totalPrice}`)
       }
     },
     components: {
@@ -341,4 +371,36 @@
           padding: 12px 0
           box-sizing: border-box
           border-1px(rgba(7, 17, 27, 0.1))
+          .name
+            line-height: 24px
+            font-size: 14px
+            color: rgb(7, 17, 27)
+          .price
+            position: absolute
+            right: 90px
+            bottom: 12px
+            line-height: 24px
+            font-size: 14px
+            font-weight: 700
+            color: rgb(240, 20, 20)
+          .cartcontrol-wrapper
+            position: absolute
+            right: 0
+            bottom: 6px
+  .list-mask
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    z-index: -2
+    filter: blur(10px)
+    backdrop-filter: blur(10px)
+    background: rgba(7, 17, 27, 0.6)
+    &.fade-enter-active, &.fade-leave-active
+      transition: all 0.5s
+    &.fade-enter
+      opacity: 1
+    &.fade-leave-active
+      opacity: 0
 </style>

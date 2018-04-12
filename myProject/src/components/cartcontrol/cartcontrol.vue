@@ -1,12 +1,12 @@
 <template>
   <div class="cartcontrol">
     <transition name="move">
-      <div class="cart-decrease" v-show="food.count>0" @click="decreaseCart">
+      <div class="cart-decrease" v-show="food.count>0" @click.stop.prevent="decreaseCart">
           <span class="inner icon-remove_circle_outline"></span>
       </div>
     </transition>
     <div class="cart-count" v-show="food.count>0">{{food.count}}</div>
-    <div class="cart-add icon-add_circle" @click="addCart"></div>
+    <div class="cart-add icon-add_circle" @click.stop.prevent="addCart"></div>
   </div>
 </template>
 
@@ -30,8 +30,7 @@
             this.food.count ++
         }
         // console.log(this.$root.eventHub)
-        // this.$root.eventHub.$emit('cart-add', event.target) // 传输点击的目标元素
-        this.$emit('cart-add', event.target) // 传输点击的目标元素
+        this.$root.eventHub.$emit('cart-add', event.target) // 传输点击的目标元素
       },
       decreaseCart (event) { // 减少数量
         if (!event._constructed) {

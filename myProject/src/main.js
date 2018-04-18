@@ -44,4 +44,4 @@ new Vue({
   }
 })
 
-router.push('/goods')
+// router.push('/goods')

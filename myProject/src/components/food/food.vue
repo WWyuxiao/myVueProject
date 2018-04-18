@@ -34,18 +34,18 @@
               <ratingselect :select-type="selectType" :only-content="onlyContent" :desc="desc" :ratings="food.ratings" @selRatings="filterRatings" @isContent="isContent"></ratingselect>
               <div class="rating-wrapper">
                   <ul v-show="food.ratings && food.ratings.length">
-                      <li v-for="(rating, index) in food.ratings" :key="index" class="rating-item borer-1px">
+                      <li v-show="needShow(rating.rateType, rating.text)" v-for="(rating, index) in food.ratings" :key="index" class="rating-item borer-1px">
                           <div class="user">
                               <span class="name">{{rating.username}}</span>
                               <img :src="rating.avatar" class="avatar" width="12" height="12">
                           </div>
-                          <div class="time">{{rating.rateTime}}</div>
+                          <div class="time">{{rating.rateTime | formatDate('yyyy-MM-dd hh:mm')}}</div>
                           <p class="text">
                               <span :class="{'icon-thumb_up':rating.rateType === 0, 'icon-thumb_down':rating.rateType === 1}">{{rating.text}}</span>
                           </p>
                       </li>
                   </ul>
-                  <div class="no-ratings" v-show="!food.ratings || !food.ratings.length"></div>
+                  <div class="no-ratings" v-show="!food.ratings || !food.ratings.length">暂无评价</div>
               </div>
           </div>
       </div>
@@ -60,8 +60,6 @@
   import ratingselect from '../ratingselect/ratingselect'
   import split from '../split/split'
 
-//   const POSITIVE = 0
-//   const NEGATIVE = 1
   const ALL = 2
   
   export default {
@@ -86,7 +84,7 @@
       show () {
         this.showFlag = true
         this.selectType = ALL
-        this.onlyContent = false
+        this.onlyContent = true
         this.$nextTick(() => {
           if (!this.scroll) {
             this.scroll = new BScroll(this.$refs.food, {
@@ -107,17 +105,27 @@
         this.$root.eventHub.$emit('cart-add', event.target)
         Vue.set(this.food, 'count', 1)
       },
-      filterRatings (type) { // 获取子组件点击事件传递过来的数据
-        this.selectType = type
+      filterRatings (data) { // 获取子组件点击事件传递过来的数据
+        this.selectType = data.selectType
         this.$nextTick(() => {
           this.scroll.refresh()
         })
       },
-      isContent (bool) { // 获取子组件点击事件传递过来的数据
-        this.onlyContent = bool
+      isContent (data) { // 获取子组件点击事件传递过来的数据
+        this.onlyContent = data.bool
         this.$nextTick(() => {
           this.scroll.refresh()
         })
+      },
+      needShow (type, text) {
+        if (this.onlyContent && !text) {
+          return false
+        }
+        if (this.selectType === ALL) {
+          return true
+        } else {
+          return type === this.selectType
+        }
       }
     },
     components: {
@@ -276,4 +284,8 @@
               color: rgb(0, 160, 220)
             .icon_thumb_down
               color: rgb(147, 153, 159)
+        .no-ratings
+          padding: 16px 0
+          font-size: 12px
+          color: rgb(147, 153, 159)
 </style>

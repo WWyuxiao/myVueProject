@@ -8,6 +8,7 @@ const path = require('path')
 module.exports = {
   build: {
     env: require('./prod.env'),
+    port: 9000, // 定义打包后文件，要运行的端口
     index: path.resolve(__dirname, '../dist/index.html'),
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',

@@ -12,27 +12,38 @@
         <router-link to="/seller">商家</router-link>
       </div>
     </div>
-    <router-view :seller="seller"></router-view>
+    <keep-alive>
+      <router-view :seller="seller"></router-view>
+    </keep-alive>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import header from './components/header/header'
+  import {urlParse} from './common/js/util'
   
   const ERR_OK = 0
 
   export default {
     data () {
       return {
-        seller: {}
+        seller: {
+          id: (() => {
+            let queryParam = urlParse()
+            return queryParam.id
+          })()
+        }
       }
     },
     created () {
-      this.$http.get('/api/seller').then(response => {
-        response = response.body
+      this.$http.get('/api/seller?id=' + this.seller.id).then(response => {
+        response = response.body // 获取数据，object类型
+        // 判断是否成功拿到了数据
         if (response.errno === ERR_OK) {
-          this.seller = response.data
-          console.log(this.seller)
+          // 成功获取到数据，之后子组件header使用props接收数据，header组件进行渲染
+          // this.seller = response.data // 直接赋值id会丢失，this.seller.id = undefined
+          this.seller = Object.assign({}, this.seller, response.data) // 对象合并
+          // console.log(this.seller)
         }
       }, response => {
         // error callback

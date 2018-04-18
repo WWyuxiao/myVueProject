@@ -61,17 +61,21 @@
         if (!event._constructed) {
           return
         }
-        this.selectType = type
+        let data = {
+          selectType: type
+        }
         // 自定义事件,并向父级传输数据
-        this.$emit('selRatings', this.selectType)
+        this.$emit('selRatings', data)
       },
       toggleContent (event) {
         if (!event._constructed) {
           return
         }
-        this.onlyContent = !this.onlyContent
+        let data = {
+          bool: !this.onlyContent
+        }
         // 自定义事件,并向父级传递数据
-        this.$emit('isContent', this.onlyContent)
+        this.$emit('isContent', data)
       }
     },
     components: {

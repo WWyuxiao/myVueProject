@@ -53,6 +53,46 @@
     <transition name="fade">
       <div class="list-mask" v-show="listShow" @click.stop.prevent="hideList"></div>
     </transition>
+    <div class="pay-wrapper" v-show="payMethodsShow">
+      <div class="pay-content">
+        <h1 class="title border-1px">请选择支付方式</h1>
+        <div class="payMethods-list">
+          <ul>
+            <li class="payMethods">
+              <input type="radio">
+              <i class="ico">
+                <img src="">
+              </i>
+              <span class="info">微信支付</span>
+            </li>
+            <li class="payMethods">
+              <input type="radio">
+              <i class="ico">
+                <img src="">
+              </i>
+              <span class="info">支付宝</span>
+            </li>
+            <li class="payMethods">
+              <input type="radio">
+              <i class="ico">
+                <img src="">
+              </i>
+              <span class="info">信用卡支付</span>
+            </li>
+            <li class="payMethods">
+              <input type="radio">
+              <i class="ico">
+                <img src="">
+              </i>
+              <span class="info">网上银行</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="back">
+        <div class="backBtn" @click="back">返回上一页</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -97,7 +137,8 @@
           }
         ],
         dropBalls: [], // 下落的小球
-        fold: true // 购物车默认折叠
+        fold: true, // 购物车默认折叠
+        payMethodsShow: false // 支付页面默认不显示
       }
     },
     created () {
@@ -223,7 +264,10 @@
         if (this.totalPrice < this.minPrice) {
           return
         }
-        window.alert(`支付${this.totalPrice}`)
+        this.payMethodsShow = true // 跳转支付方式
+      },
+      back () {
+        this.payMethodsShow = false
       }
     },
     components: {
@@ -403,4 +447,45 @@
       opacity: 1
     &.fade-leave-active
       opacity: 0
+  .pay-wrapper
+    position: fixed
+    left: 0
+    top: 0
+    z-index: 100
+    width: 100%
+    height: 100%
+    .pay-content
+      box-sizing: border-box
+      padding: 30px
+      width: 100%
+      height: 100%
+      background: #fff
+      .title
+        height: 50px
+        line-height: 50px
+        font-size: 18px
+        font-weight: 700
+        color: #666
+        border-1px(rgba(7, 17, 27, 0.1))
+      .payMethods-list
+        padding: 20px 0
+        .payMethods
+          padding: 10px 0
+          line-height: 26px
+          font-size: 16px
+    .back
+      position: fixed
+      left: 0
+      bottom: 50px
+      box-sizing: border-box
+      width: 100%
+      height: 50px
+      text-align: center
+      .backBtn
+        margin: 0 auto
+        width: 120px
+        height: 50px
+        line-height: 50px
+        background: #aaa
+        color: #fff
 </style>

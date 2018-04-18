@@ -43,6 +43,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import '../../common/js/formatdate.js'
   import BScroll from 'better-scroll'
   import shopcart from '../shopcart/shopcart'
   import cartcontrol from '../cartcontrol/cartcontrol'
@@ -134,7 +135,6 @@
           return
         }
         this.selectedFood = food
-        console.log(this.selectedFood)
         this.$refs.food.show()
       }
     },
@@ -174,14 +174,14 @@
           background: #ffffff
           font-weight: 700
           .text
-            border-no()
+            border-none()
         .icon
           vertical-align: top
           display: inline-block
           width: 12px
-          height: 12px 
+          height: 12px
           margin-right: 2px
-          background-size: 12px 12px 
+          background-size: 12px 12px
           background-repeat: no-repeat
           &.decrease
             bg-image('decrease_3')
@@ -196,8 +196,8 @@
         .text
           display: table-cell
           vertical-align: middle
-          border-1px(rgba(7, 17, 27, 0.1))
           font-size: 12px
+          border-1px(rgba(7, 17, 27, 0.1))
     .foods-wrapper
       flex: 1
       .title
@@ -213,7 +213,7 @@
         margin: 18px
         padding-bottom: 18px
         border-1px(rgba(7, 17, 27, 0.1))
-        &: last-child
+        &:last-child
           border-none()
           margin-bottom: 0
         .icon
@@ -227,7 +227,7 @@
             line-height: 14px
             font-size: 14px
             color: rgb(7, 17, 27)
-          .desc, .extr
+          .desc,.extr
             line-height: 10px
             font-size: 10px
             color: rgb(147, 153, 159)
@@ -248,7 +248,7 @@
               font-size: 10px
               color: rgb(147, 153, 159)
           .cartcontrol-wrapper
-            position: absolute 
+            position: absolute
             right: 0
             bottom: 12px
 </style>

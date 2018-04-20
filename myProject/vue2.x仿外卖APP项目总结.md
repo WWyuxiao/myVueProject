@@ -401,5 +401,30 @@ npm run build
 node prod.server.js 
 
 会看到 Listening at http://localhost:9000 在浏览器中打开即可
+```
+## 8-3.手机测试网页技巧
+将localhost换成自己的ip地址，Windows在命令行执行ipconfig查看，mac执行ifconfig查看。
+然后复制地址栏，进入[草料二维码](https://cli.im/)，生成二维码，然后用手机扫一扫就可以查看了，前提是，你手机和电脑必须在同一个局域网。
+
+## 9-学习参考
+
+vue2.0官网： https://vuefe.cn/v2/guide/
+
+webpack1免费视频课程，戳这里：http://www.imooc.com/learn/802
+
+webpack1向webpack2升级：https://webpack.js.org/guides/migrating/
+
+better-scroll插件使用：https://github.com/ustbhuangyi/better-scroll
+
+stylus： http://www.zhangxinxu.com/jq/stylus/
+
+ES6: http://es6.ruanyifeng.com/
+
+Sticky footers http://www.w3cplus.com/css3/css-secrets/sticky-footers.html
+
+Flex弹性布局: http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html?utm_source=tuicool
+
+localStorage本地存储: http://www.cnblogs.com/st-leslie/p/5617130.html
+
 
 
